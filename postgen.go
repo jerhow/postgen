@@ -41,15 +41,21 @@ func main() {
 	fmt.Println(reflect.TypeOf(bottomHTML))
 	fmt.Println(len(bottomHTML))
 
+	fmt.Println("Trying our thing here...")
+	finalOutput := append(topHTML[:], content[:]...)
+	finalOutput = append(finalOutput, bottomHTML[:]...)
+	// fmt.Println(string(testOutput))
+	// fmt.Println(append(topHTML[:], bottomHTML[:]...))
+
 	// capacity := len(topHTML) + len(content) + len(bottomHTML)
 	// fmt.Println(capacity)
 
-	topHTML_str := string(topHTML)
-	content_str := string(content)
-	bottomHTML_str := string(bottomHTML)
+	// topHTML_str := string(topHTML)
+	// content_str := string(content)
+	// bottomHTML_str := string(bottomHTML)
 
-	finalOutput_str := topHTML_str + content_str + bottomHTML_str
-	finalOutput := []byte(finalOutput_str)
+	// finalOutput_str := topHTML_str + content_str + bottomHTML_str
+	// finalOutput := []byte(finalOutput_str)
 
 	err = ioutil.WriteFile(outputFile, finalOutput, 0644)
 	check(err)
