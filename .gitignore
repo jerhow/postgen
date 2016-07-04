@@ -11,3 +11,6 @@ _test
 *.md
 *.html
 
+# Can I just ignore the binary?
+postgen
+
