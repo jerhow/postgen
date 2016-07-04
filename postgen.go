@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt" // A package in the Go standard library.
+	"fmt"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
 	"io/ioutil"
