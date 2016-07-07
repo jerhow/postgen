@@ -6,9 +6,15 @@ import (
 	"github.com/russross/blackfriday"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
 func main() {
+
+	root := "./markdown_source_files"
+	err := filepath.Walk(root, visit)
+	fmt.Printf("filepath.Walk() returned %v\n", err)
+	os.Exit(1)
 
 	args := os.Args[1:] // Reason: index 0 contains the program path
 	if len(args) != 2 {
@@ -43,6 +49,11 @@ func main() {
 	check(err)
 
 	fmt.Println("Program finished, check result.")
+}
+
+func visit(path string, f os.FileInfo, err error) error {
+	fmt.Printf("Visited: %s\n", path)
+	return nil
 }
 
 func check(e error) {
