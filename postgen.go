@@ -36,8 +36,8 @@ func main() {
 
 	// Get the configs for this page:
 	// First read the post's corresponding .json file
-	configFile := "./content/" + strings.Replace(inputFile, ".md", "", 1) + ".json"
-	configJson, err := ioutil.ReadFile(configFile)
+	configPath := "./content/" + strings.Replace(inputFile, ".md", "", 1) + ".json"
+	configJson, err := ioutil.ReadFile(configPath)
 	check(err)
 
 	// Then parse out our relevant config values for later use
@@ -47,11 +47,14 @@ func main() {
 	fmt.Println("postTitle: " + config.Title)
 	fmt.Println("postDate: " + config.Date)
 	fmt.Println("Leaving off here")
-	os.Exit(1)
+	// os.Exit(1)
 
 	// Get the Markdown input
-	rawInput, err := ioutil.ReadFile(inputFile)
+	rawInput, err := ioutil.ReadFile("./content/" + inputFile)
 	check(err)
+
+	// fmt.Println(rawInput)
+	// os.Exit(1)
 
 	// Convert and sanitize our content
 	unsafe := blackfriday.MarkdownCommon(rawInput)
@@ -68,7 +71,7 @@ func main() {
 	finalOutput = append(finalOutput, bottomHTML[:]...)
 
 	// Write our output to an HTML file
-	err = ioutil.WriteFile(outputFile, finalOutput, 0644)
+	err = ioutil.WriteFile("./content/"+outputFile, finalOutput, 0644)
 	check(err)
 
 	fmt.Println("Program finished, check result.")
