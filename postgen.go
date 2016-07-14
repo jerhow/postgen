@@ -53,9 +53,6 @@ func main() {
 	rawInput, err := ioutil.ReadFile("./content/" + inputFile)
 	check(err)
 
-	// fmt.Println(rawInput)
-	// os.Exit(1)
-
 	// Convert and sanitize our content
 	unsafe := blackfriday.MarkdownCommon(rawInput)
 	content := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
@@ -69,6 +66,10 @@ func main() {
 	// Incrementally building a singular byte array via append()
 	finalOutput := append(topHTML[:], content[:]...)
 	finalOutput = append(finalOutput, bottomHTML[:]...)
+
+	temp := string(finalOutput[:])
+	temp = strings.Replace(temp, "{{title}}", config.Title, -1)
+	finalOutput = []byte(temp)
 
 	// Write our output to an HTML file
 	err = ioutil.WriteFile("./content/"+outputFile, finalOutput, 0644)
