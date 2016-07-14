@@ -6,15 +6,23 @@ import (
 	"github.com/russross/blackfriday"
 	"io/ioutil"
 	"os"
-	"path/filepath"
+	// "path/filepath"
+	"encoding/json"
+	"strings"
 )
+
+// For holding our post's configuration settings
+type Config struct {
+	Title string `json:"title`
+	Date  string `json:"date`
+}
 
 func main() {
 
-	root := "./markdown_source_files"
-	err := filepath.Walk(root, visit)
-	fmt.Printf("filepath.Walk() returned %v\n", err)
-	os.Exit(1)
+	// root := "./content"
+	// err := filepath.Walk(root, visit)
+	// fmt.Printf("filepath.Walk() returned %v\n", err)
+	// os.Exit(1)
 
 	args := os.Args[1:] // Reason: index 0 contains the program path
 	if len(args) != 2 {
@@ -25,6 +33,21 @@ func main() {
 	}
 	inputFile := args[0]
 	outputFile := args[1]
+
+	// Get the configs for this page:
+	// First read the post's corresponding .json file
+	configFile := "./content/" + strings.Replace(inputFile, ".md", "", 1) + ".json"
+	configJson, err := ioutil.ReadFile(configFile)
+	check(err)
+
+	// Then parse out our relevant config values for later use
+	var config Config
+	err = json.Unmarshal(configJson, &config)
+	check(err)
+	fmt.Println("postTitle: " + config.Title)
+	fmt.Println("postDate: " + config.Date)
+	fmt.Println("Leaving off here")
+	os.Exit(1)
 
 	// Get the Markdown input
 	rawInput, err := ioutil.ReadFile(inputFile)
