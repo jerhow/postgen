@@ -34,20 +34,12 @@ func main() {
 	inputFile := args[0]
 	outputFile := args[1]
 
-	// Get the configs for this page:
-	// First read the post's corresponding .json file
-	configPath := "./content/" + strings.Replace(inputFile, ".md", "", 1) + ".json"
-	configJson, err := ioutil.ReadFile(configPath)
-	check(err)
+	title, date := getPostConfigsJson(inputFile)
 
-	// Then parse out our relevant config values for later use
-	var config Config
-	err = json.Unmarshal(configJson, &config)
-	check(err)
-	fmt.Println("postTitle: " + config.Title)
-	fmt.Println("postDate: " + config.Date)
+	fmt.Println("postTitle: " + title)
+	fmt.Println("postDate: " + date)
 	fmt.Println("Leaving off here")
-	// os.Exit(1)
+	os.Exit(1)
 
 	// Get the Markdown input
 	rawInput, err := ioutil.ReadFile("./content/" + inputFile)
@@ -68,7 +60,7 @@ func main() {
 	finalOutput = append(finalOutput, bottomHTML[:]...)
 
 	temp := string(finalOutput[:])
-	temp = strings.Replace(temp, "{{title}}", config.Title, -1)
+	temp = strings.Replace(temp, "{{title}}", title, -1)
 	finalOutput = []byte(temp)
 
 	// Write our output to an HTML file
@@ -76,6 +68,21 @@ func main() {
 	check(err)
 
 	fmt.Println("Program finished, check result.")
+}
+
+func getPostConfigsJson(inputFile string) (string, string) {
+	// Get the configs for this page:
+	// First read the post's corresponding .json file
+	configPath := "./content/" + strings.Replace(inputFile, ".md", "", 1) + ".json"
+	configJson, err := ioutil.ReadFile(configPath)
+	check(err)
+
+	// Then parse out our relevant config values for later use
+	var config Config
+	err = json.Unmarshal(configJson, &config)
+	check(err)
+
+	return config.Title, config.Date
 }
 
 func visit(path string, f os.FileInfo, err error) error {
