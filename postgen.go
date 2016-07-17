@@ -45,19 +45,24 @@ func main() {
 
 	topHTML, bottomHTML := getSharedMarkup()
 
-	// Incrementally building a singular byte array via append()
-	finalOutput := append(topHTML[:], content[:]...)
-	finalOutput = append(finalOutput, bottomHTML[:]...)
+	combinedOutput := buildCombinedOutput(topHTML, content, bottomHTML)
 
-	temp := string(finalOutput[:])
+	temp := string(combinedOutput[:])
 	temp = strings.Replace(temp, "{{title}}", title, -1)
-	finalOutput = []byte(temp)
+	finalOutput := []byte(temp)
 
 	// Write our output to an HTML file
 	err := ioutil.WriteFile("./content/"+outputFile, finalOutput, 0644)
 	check(err)
 
 	fmt.Println("Program finished, check result.")
+}
+
+func buildCombinedOutput(topHTML []byte, content []byte, bottomHTML []byte) []byte {
+	// Incrementally building a singular byte array via append()
+	combinedOutput := append(topHTML[:], content[:]...)
+	combinedOutput = append(combinedOutput, bottomHTML[:]...)
+	return combinedOutput
 }
 
 func getSharedMarkup() ([]byte, []byte) {
