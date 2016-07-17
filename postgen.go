@@ -41,14 +41,9 @@ func main() {
 	fmt.Println("Leaving off here")
 	// os.Exit(1)
 
-	// func call here
 	content := getContent(inputFile)
 
-	// Get the shared markup pieces
-	topHTML, err := ioutil.ReadFile("./shared_markup/top.html")
-	check(err)
-	bottomHTML, err := ioutil.ReadFile("./shared_markup/bottom.html")
-	check(err)
+	topHTML, bottomHTML := getSharedMarkup()
 
 	// Incrementally building a singular byte array via append()
 	finalOutput := append(topHTML[:], content[:]...)
@@ -59,13 +54,25 @@ func main() {
 	finalOutput = []byte(temp)
 
 	// Write our output to an HTML file
-	err = ioutil.WriteFile("./content/"+outputFile, finalOutput, 0644)
+	err := ioutil.WriteFile("./content/"+outputFile, finalOutput, 0644)
 	check(err)
 
 	fmt.Println("Program finished, check result.")
 }
 
+func getSharedMarkup() ([]byte, []byte) {
+
+	// Get the shared markup pieces
+	topHTML, err := ioutil.ReadFile("./shared_markup/top.html")
+	check(err)
+	bottomHTML, err := ioutil.ReadFile("./shared_markup/bottom.html")
+	check(err)
+
+	return topHTML, bottomHTML
+}
+
 func getContent(inputFile string) []byte {
+
 	// Get the Markdown input
 	rawInput, err := ioutil.ReadFile("./content/" + inputFile)
 	check(err)
