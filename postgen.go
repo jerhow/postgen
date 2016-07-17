@@ -39,15 +39,10 @@ func main() {
 	fmt.Println("postTitle: " + title)
 	fmt.Println("postDate: " + date)
 	fmt.Println("Leaving off here")
-	os.Exit(1)
+	// os.Exit(1)
 
-	// Get the Markdown input
-	rawInput, err := ioutil.ReadFile("./content/" + inputFile)
-	check(err)
-
-	// Convert and sanitize our content
-	unsafe := blackfriday.MarkdownCommon(rawInput)
-	content := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
+	// func call here
+	content := getContent(inputFile)
 
 	// Get the shared markup pieces
 	topHTML, err := ioutil.ReadFile("./shared_markup/top.html")
@@ -68,6 +63,18 @@ func main() {
 	check(err)
 
 	fmt.Println("Program finished, check result.")
+}
+
+func getContent(inputFile string) []byte {
+	// Get the Markdown input
+	rawInput, err := ioutil.ReadFile("./content/" + inputFile)
+	check(err)
+
+	// Convert and sanitize our content
+	unsafe := blackfriday.MarkdownCommon(rawInput)
+	content := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
+
+	return content
 }
 
 func getPostConfigsJson(inputFile string) (string, string) {
