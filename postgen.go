@@ -49,11 +49,16 @@ func main() {
 
 	finalOutput := interpolateConfigVals(combinedOutput, title)
 
+	writeOutputFile(finalOutput, outputFile)
+
+	fmt.Println("Program finished, check result.")
+}
+
+func writeOutputFile(finalOutput []byte, outputFile string) bool {
 	// Write our output to an HTML file
 	err := ioutil.WriteFile("./content/"+outputFile, finalOutput, 0644)
 	check(err)
-
-	fmt.Println("Program finished, check result.")
+	return true
 }
 
 // ...into the output
