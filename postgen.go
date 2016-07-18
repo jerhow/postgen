@@ -47,15 +47,20 @@ func main() {
 
 	combinedOutput := buildCombinedOutput(topHTML, content, bottomHTML)
 
-	temp := string(combinedOutput[:])
-	temp = strings.Replace(temp, "{{title}}", title, -1)
-	finalOutput := []byte(temp)
+	finalOutput := interpolateConfigVals(combinedOutput, title)
 
 	// Write our output to an HTML file
 	err := ioutil.WriteFile("./content/"+outputFile, finalOutput, 0644)
 	check(err)
 
 	fmt.Println("Program finished, check result.")
+}
+
+// ...into the output
+func interpolateConfigVals(combinedOutput []byte, title string) []byte {
+	str := string(combinedOutput[:])
+	str = strings.Replace(str, "{{title}}", title, -1)
+	return []byte(str)
 }
 
 func buildCombinedOutput(topHTML []byte, content []byte, bottomHTML []byte) []byte {
