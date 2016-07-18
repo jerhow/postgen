@@ -24,15 +24,8 @@ func main() {
 	// fmt.Printf("filepath.Walk() returned %v\n", err)
 	// os.Exit(1)
 
-	args := os.Args[1:] // Reason: index 0 contains the program path
-	if len(args) != 2 {
-		fmt.Println("ERROR: Wrong number of arguments provided. We're expecting:")
-		fmt.Println("1. Input file")
-		fmt.Println("2. Output file")
-		os.Exit(1)
-	}
-	inputFile := args[0]
-	outputFile := args[1]
+	// Note: index 0 contains the program path, so I'm excluding it from what gets passed in
+	inputFile, outputFile := dealWithArgs(os.Args[1:])
 
 	title, date := getPostConfigsJson(inputFile)
 
@@ -52,6 +45,20 @@ func main() {
 	writeOutputFile(finalOutput, outputFile)
 
 	fmt.Println("Program finished, check result.")
+}
+
+func dealWithArgs(args []string) (string, string) {
+	// args := os.Args[1:] // Reason: index 0 contains the program path
+	if len(args) != 2 {
+		fmt.Println("ERROR: Wrong number of arguments provided. We're expecting:")
+		fmt.Println("1. Input file")
+		fmt.Println("2. Output file")
+		os.Exit(1)
+	}
+	inputFile := args[0]
+	outputFile := args[1]
+
+	return inputFile, outputFile
 }
 
 func writeOutputFile(finalOutput []byte, outputFile string) bool {
