@@ -11,6 +11,9 @@ _test
 *.md
 *.html
 
+# Config
+*.json
+
 # Can I just ignore the binary?
 postgen
 
