@@ -27,22 +27,22 @@ func main() {
 	// Note: index 0 contains the program path, so I'm excluding it from what gets passed in
 	inputFile, outputFile := dealWithArgs(os.Args[1:])
 
-	title, date := getPostConfigsJson(inputFile)
+	title, date := getPostConfigsJson(&inputFile)
 
 	fmt.Println("postTitle: " + title)
 	fmt.Println("postDate: " + date)
 	fmt.Println("Leaving off here")
 	// os.Exit(1)
 
-	content := getContent(inputFile)
+	content := getContent(&inputFile)
 
 	topHTML, bottomHTML := getSharedMarkup()
 
 	combinedOutput := buildCombinedOutput(topHTML, content, bottomHTML)
 
-	finalOutput := interpolateConfigVals(combinedOutput, title)
+	finalOutput := interpolateConfigVals(combinedOutput, &title)
 
-	writeOutputFile(finalOutput, outputFile)
+	writeOutputFile(finalOutput, &outputFile)
 
 	fmt.Println("Program finished, check result.")
 }
@@ -61,17 +61,17 @@ func dealWithArgs(args []string) (string, string) {
 	return inputFile, outputFile
 }
 
-func writeOutputFile(finalOutput []byte, outputFile string) bool {
+func writeOutputFile(finalOutput []byte, outputFile *string) bool {
 	// Write our output to an HTML file
-	err := ioutil.WriteFile("./content/"+outputFile, finalOutput, 0644)
+	err := ioutil.WriteFile("./content/"+*outputFile, finalOutput, 0644)
 	check(err)
 	return true
 }
 
 // ...into the output
-func interpolateConfigVals(combinedOutput []byte, title string) []byte {
+func interpolateConfigVals(combinedOutput []byte, title *string) []byte {
 	str := string(combinedOutput[:])
-	str = strings.Replace(str, "{{title}}", title, -1)
+	str = strings.Replace(str, "{{title}}", *title, -1)
 	return []byte(str)
 }
 
@@ -93,10 +93,10 @@ func getSharedMarkup() ([]byte, []byte) {
 	return topHTML, bottomHTML
 }
 
-func getContent(inputFile string) []byte {
+func getContent(inputFile *string) []byte {
 
 	// Get the Markdown input
-	rawInput, err := ioutil.ReadFile("./content/" + inputFile)
+	rawInput, err := ioutil.ReadFile("./content/" + *inputFile)
 	check(err)
 
 	// Convert and sanitize our content
@@ -106,10 +106,10 @@ func getContent(inputFile string) []byte {
 	return content
 }
 
-func getPostConfigsJson(inputFile string) (string, string) {
+func getPostConfigsJson(inputFile *string) (string, string) {
 	// Get the configs for this page:
 	// First read the post's corresponding .json file
-	configPath := "./content/" + strings.Replace(inputFile, ".md", "", 1) + ".json"
+	configPath := "./content/" + strings.Replace(*inputFile, ".md", "", 1) + ".json"
 	configJson, err := ioutil.ReadFile(configPath)
 	check(err)
 
