@@ -8,8 +8,8 @@ _obj
 _test
 
 # Input/output
-*.md
-*.html
+content/*.md
+content/*.html
 
 # Config
 *.json
