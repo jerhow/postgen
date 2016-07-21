@@ -40,7 +40,7 @@ func main() {
 
 	combinedOutput := buildCombinedOutput(topHTML, content, bottomHTML)
 
-	finalOutput := interpolateConfigVals(combinedOutput, &title)
+	finalOutput := interpolateConfigVals(combinedOutput, &title, &date)
 
 	writeOutputFile(finalOutput, &outputFile)
 
@@ -69,9 +69,10 @@ func writeOutputFile(finalOutput []byte, outputFile *string) bool {
 }
 
 // ...into the output
-func interpolateConfigVals(combinedOutput []byte, title *string) []byte {
+func interpolateConfigVals(combinedOutput []byte, title *string, date *string) []byte {
 	str := string(combinedOutput[:])
 	str = strings.Replace(str, "{{title}}", *title, -1)
+	str = strings.Replace(str, "{{date}}", *date, -1)
 	return []byte(str)
 }
 
