@@ -1,0 +1,66 @@
+/*
+All credit for this CSS3 blinking cursor goes to Artem Gordinsky:
+https://codepen.io/ArtemGordinsky/pen/GnLBq
+*/
+
+.blinking-cursor {
+  /*font-weight: bold;*/
+  font-size: 1em;
+  color: #2E3D48;
+  margin-left: -5px;
+  -webkit-animation: 1s blink step-end infinite;
+  -moz-animation: 1s blink step-end infinite;
+  -ms-animation: 1s blink step-end infinite;
+  -o-animation: 1s blink step-end infinite;
+  animation: 1s blink step-end infinite;
+}
+
+@keyframes "blink" {
+  from, to {
+    color: transparent;
+  }
+  50% {
+    /*color: black;*/
+    color: #001f3f;
+  }
+}
+
+@-moz-keyframes blink {
+  from, to {
+    color: transparent;
+  }
+  50% {
+    /*color: black;*/
+    color: #001f3f;
+  }
+}
+
+@-webkit-keyframes "blink" {
+  from, to {
+    color: transparent;
+  }
+  50% {
+    /*color: black;*/
+    color: #001f3f;
+  }
+}
+
+@-ms-keyframes "blink" {
+  from, to {
+    color: transparent;
+  }
+  50% {
+    /*color: black;*/
+    color: #001f3f;
+  }
+}
+
+@-o-keyframes "blink" {
+  from, to {
+    color: transparent;
+  }
+  50% {
+    /*color: black;*/
+    color: #001f3f;
+  }
+}
