@@ -6,7 +6,7 @@ import (
 	"github.com/russross/blackfriday"
 	"io/ioutil"
 	"os"
-	// "path/filepath"
+	// "path/filepath" // NOTE: Holding this for something I'll be adding soon.
 	"encoding/json"
 	"net/url"
 	"strings"
@@ -21,6 +21,8 @@ type Config struct {
 
 func main() {
 
+	// NOTE: Holding this for something I'll be adding soon.
+	//
 	// root := "./content"
 	// err := filepath.Walk(root, visit)
 	// fmt.Printf("filepath.Walk() returned %v\n", err)
@@ -33,24 +35,19 @@ func main() {
 
 	fmt.Println("postTitle: " + title)
 	fmt.Println("postDate: " + date)
-	fmt.Println("Leaving off here")
+	fmt.Println("permalink: " + permalink)
+	// fmt.Println("Leaving off here")
 	// os.Exit(1)
 
 	content := getContent(&inputFile)
-
 	topHTML, bottomHTML := getSharedMarkup()
-
 	combinedOutput := buildCombinedOutput(topHTML, content, bottomHTML)
-
 	finalOutput := interpolateConfigVals(combinedOutput, &title, &date, &permalink)
-
 	writeOutputFile(finalOutput, &outputFile)
-
 	fmt.Println("Program finished, check result.")
 }
 
 func dealWithArgs(args []string) (string, string) {
-	// args := os.Args[1:] // Reason: index 0 contains the program path
 	if len(args) != 2 {
 		fmt.Println("ERROR: Wrong number of arguments provided. We're expecting:")
 		fmt.Println("1. Input file")
@@ -70,17 +67,18 @@ func writeOutputFile(finalOutput []byte, outputFile *string) bool {
 	return true
 }
 
-// ...into the output
+// Interpolate config values into the output
 func interpolateConfigVals(combinedOutput []byte, title *string, date *string, permalink *string) []byte {
+
 	encodedSquigglyOpen := url.QueryEscape("{")
 	encodedSquigglyClose := url.QueryEscape("}")
 	permalinkPlaceHolder := encodedSquigglyOpen + encodedSquigglyOpen + "permalink" + encodedSquigglyClose + encodedSquigglyClose
-	// fmt.Println(permalinkPlaceHolder)
+
 	str := string(combinedOutput[:])
-	// fmt.Println(str)
 	str = strings.Replace(str, "{{title}}", *title, -1)
 	str = strings.Replace(str, "{{date}}", *date, -1)
 	str = strings.Replace(str, permalinkPlaceHolder, *permalink, -1)
+
 	return []byte(str)
 }
 
