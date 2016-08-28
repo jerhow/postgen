@@ -108,8 +108,12 @@ func getContent(inputFile *string) []byte {
 
 	// Convert and sanitize our content
 	unsafe := blackfriday.MarkdownCommon(rawInput)
-	content := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
+	policy := bluemonday.UGCPolicy()
+	policy.RequireNoFollowOnLinks(false)
+	// This allows us to arbitrarily add "rel" attributes to our links
+	policy.AllowAttrs("rel").OnElements("a", "area")
 
+	content := policy.SanitizeBytes(unsafe)
 	return content
 }
 
