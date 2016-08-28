@@ -8,13 +8,15 @@ import (
 	"os"
 	// "path/filepath"
 	"encoding/json"
+	"net/url"
 	"strings"
 )
 
 // For holding our post's configuration settings
 type Config struct {
-	Title string `json:"title`
-	Date  string `json:"date`
+	Title     string `json:"title`
+	Date      string `json:"date`
+	Permalink string `json:"string`
 }
 
 func main() {
@@ -27,7 +29,7 @@ func main() {
 	// Note: index 0 contains the program path, so I'm excluding it from what gets passed in
 	inputFile, outputFile := dealWithArgs(os.Args[1:])
 
-	title, date := getPostConfigsJson(&inputFile)
+	title, date, permalink := getPostConfigsJson(&inputFile)
 
 	fmt.Println("postTitle: " + title)
 	fmt.Println("postDate: " + date)
@@ -40,7 +42,7 @@ func main() {
 
 	combinedOutput := buildCombinedOutput(topHTML, content, bottomHTML)
 
-	finalOutput := interpolateConfigVals(combinedOutput, &title, &date)
+	finalOutput := interpolateConfigVals(combinedOutput, &title, &date, &permalink)
 
 	writeOutputFile(finalOutput, &outputFile)
 
@@ -69,10 +71,16 @@ func writeOutputFile(finalOutput []byte, outputFile *string) bool {
 }
 
 // ...into the output
-func interpolateConfigVals(combinedOutput []byte, title *string, date *string) []byte {
+func interpolateConfigVals(combinedOutput []byte, title *string, date *string, permalink *string) []byte {
+	encodedSquigglyOpen := url.QueryEscape("{")
+	encodedSquigglyClose := url.QueryEscape("}")
+	permalinkPlaceHolder := encodedSquigglyOpen + encodedSquigglyOpen + "permalink" + encodedSquigglyClose + encodedSquigglyClose
+	// fmt.Println(permalinkPlaceHolder)
 	str := string(combinedOutput[:])
+	// fmt.Println(str)
 	str = strings.Replace(str, "{{title}}", *title, -1)
 	str = strings.Replace(str, "{{date}}", *date, -1)
+	str = strings.Replace(str, permalinkPlaceHolder, *permalink, -1)
 	return []byte(str)
 }
 
@@ -107,7 +115,7 @@ func getContent(inputFile *string) []byte {
 	return content
 }
 
-func getPostConfigsJson(inputFile *string) (string, string) {
+func getPostConfigsJson(inputFile *string) (string, string, string) {
 	// Get the configs for this page:
 	// First read the post's corresponding .json file
 	configPath := "./content/" + strings.Replace(*inputFile, ".md", "", 1) + ".json"
@@ -119,7 +127,7 @@ func getPostConfigsJson(inputFile *string) (string, string) {
 	err = json.Unmarshal(configJson, &config)
 	check(err)
 
-	return config.Title, config.Date
+	return config.Title, config.Date, config.Permalink
 }
 
 func visit(path string, f os.FileInfo, err error) error {
