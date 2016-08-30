@@ -1,14 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
 	"io/ioutil"
-	"os"
-	// "path/filepath" // NOTE: Holding this for something I'll be adding soon.
-	"encoding/json"
 	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -19,14 +19,9 @@ type Config struct {
 	Permalink string `json:"string`
 }
 
-func main() {
+var archiveList []Config // a slice of Config structs, for the 'Archive' page, etc
 
-	// NOTE: Holding this for something I'll be adding soon.
-	//
-	// root := "./content"
-	// err := filepath.Walk(root, visit)
-	// fmt.Printf("filepath.Walk() returned %v\n", err)
-	// os.Exit(1)
+func main() {
 
 	// Note: index 0 contains the program path, so I'm excluding it from what gets passed in
 	inputFile, outputFile := dealWithArgs(os.Args[1:])
@@ -44,7 +39,43 @@ func main() {
 	combinedOutput := buildCombinedOutput(topHTML, content, bottomHTML)
 	finalOutput := interpolateConfigVals(combinedOutput, &title, &date, &permalink)
 	writeOutputFile(finalOutput, &outputFile)
+
+	generateArchiveList() // exists in memory at this point
+	writeArchiveList()    // write to file
+
 	fmt.Println("Program finished, check result.")
+}
+
+func writeArchiveList() {
+	for _, postConfigStruct := range archiveList {
+		fmt.Println("\nConfigs for file:")
+		fmt.Println(postConfigStruct.Title)
+		fmt.Println(postConfigStruct.Date)
+		fmt.Println(postConfigStruct.Permalink)
+	}
+}
+
+func generateArchiveList() {
+	root := "./content"
+	err := filepath.Walk(root, pushArchiveConfigs)
+	check(err)
+}
+
+// This is a callback for filepath.Walk(), called from generateArchiveList()
+func pushArchiveConfigs(path string, f os.FileInfo, err error) error {
+
+	if filepath.Ext(path) == ".json" {
+		// fmt.Printf("Visited: %s\n", path)
+		configJson, err := ioutil.ReadFile(path)
+		check(err)
+
+		var config Config
+		err = json.Unmarshal(configJson, &config)
+		check(err)
+		archiveList = append(archiveList, config)
+	}
+
+	return nil
 }
 
 func dealWithArgs(args []string) (string, string) {
@@ -132,10 +163,10 @@ func getPostConfigsJson(inputFile *string) (string, string, string) {
 	return config.Title, config.Date, config.Permalink
 }
 
-func visit(path string, f os.FileInfo, err error) error {
-	fmt.Printf("Visited: %s\n", path)
-	return nil
-}
+// func visit(path string, f os.FileInfo, err error) error {
+// 	fmt.Printf("Visited: %s\n", path)
+// 	return nil
+// }
 
 func check(e error) {
 	if e != nil {
