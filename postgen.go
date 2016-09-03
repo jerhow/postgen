@@ -23,7 +23,8 @@ var archiveList []Config // a slice of Config structs, for the 'Archive' page, e
 
 func main() {
 
-	// Note: index 0 contains the program path, so I'm excluding it from what gets passed in
+	// Note: index 0 contains the program path,
+	// so I'm excluding it from what gets passed in
 	inputFile, outputFile := dealWithArgs(os.Args[1:])
 
 	title, date, permalink := getPostConfigsJson(&inputFile)
@@ -99,11 +100,13 @@ func writeOutputFile(finalOutput []byte, outputFile *string) bool {
 }
 
 // Interpolate config values into the output
-func interpolateConfigVals(combinedOutput []byte, title *string, date *string, permalink *string) []byte {
+func interpolateConfigVals(combinedOutput []byte, title *string, date *string,
+	permalink *string) []byte {
 
 	encodedSquigglyOpen := url.QueryEscape("{")
 	encodedSquigglyClose := url.QueryEscape("}")
-	permalinkPlaceHolder := encodedSquigglyOpen + encodedSquigglyOpen + "permalink" + encodedSquigglyClose + encodedSquigglyClose
+	permalinkPlaceHolder := encodedSquigglyOpen + encodedSquigglyOpen +
+		"permalink" + encodedSquigglyClose + encodedSquigglyClose
 
 	str := string(combinedOutput[:])
 	str = strings.Replace(str, "{{title}}", *title, -1)
