@@ -17,3 +17,5 @@ content/*.html
 # Can I just ignore the binary?
 postgen
 
+# For keeping track of things
+nextsteps.txt
