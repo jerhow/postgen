@@ -138,6 +138,11 @@ HR {
   font-size: .9em;
 }
 
+.archive_row {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
 @media screen and (max-width: 1200px) and (min-width: 1px) {
   #navbar-side {
     display: none;

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/microcosm-cc/bluemonday"
@@ -48,12 +49,34 @@ func main() {
 }
 
 func writeArchiveList() {
+
+	var buffer bytes.Buffer
+	// tmp := ""
+
 	for _, postConfigStruct := range archiveList {
 		fmt.Println("\nConfigs for file:")
 		fmt.Println(postConfigStruct.Title)
 		fmt.Println(postConfigStruct.Date)
 		fmt.Println(postConfigStruct.Permalink)
+
+		buffer.WriteString(
+			"<div class=\"archive_row\">\n" +
+				"<p>" + postConfigStruct.Date + "</p>\n" +
+				"<p><a href=\"" + postConfigStruct.Permalink + "\">" +
+				postConfigStruct.Title + "</a></p>\n" +
+				"</div>\n\n")
 	}
+
+	// fmt.Println(buffer.String())
+	topHTML, bottomHTML := getSharedMarkup()
+	title := "Archive"
+	date := ""
+	permalink := "archive"
+	content := buffer.Bytes() // we need a byte array to pass along
+	combinedOutput := buildCombinedOutput(topHTML, content, bottomHTML)
+	finalOutput := interpolateConfigVals(combinedOutput, &title, &date, &permalink)
+	outputFile := "archive.html"
+	writeOutputFile(finalOutput, &outputFile)
 }
 
 func generateArchiveList() {
