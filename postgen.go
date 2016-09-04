@@ -13,16 +13,27 @@ import (
 	"strings"
 )
 
+// Some configs are always the same no matter why we're running
+type ConfigGlobal struct {
+	BaseURL string `json:"baseURL`
+}
+
 // For holding our post's configuration settings
-type Config struct {
+type ConfigPost struct {
 	Title     string `json:"title`
 	Date      string `json:"date`
 	Permalink string `json:"string`
 }
 
-var archiveList []Config // a slice of Config structs, for the 'Archive' page, etc
+// A slice of ConfigPost structs, for the 'Archive' page, etc
+var archiveList []ConfigPost
+
+// Anything that needs access to a global config can pick it out of this struct
+var configGlobal ConfigGlobal
 
 func main() {
+
+	configGlobal = getGlobalConfigsJson()
 
 	// Note: index 0 contains the program path,
 	// so I'm excluding it from what gets passed in
@@ -70,7 +81,7 @@ func writeArchiveList() {
 	// fmt.Println(buffer.String())
 	topHTML, bottomHTML := getSharedMarkup()
 	title := "Archive"
-	date := ""
+	date := "" // no date for this page, just need something to pass to the template
 	permalink := "archive"
 	content := buffer.Bytes() // we need a byte array to pass along
 	combinedOutput := buildCombinedOutput(topHTML, content, bottomHTML)
@@ -93,7 +104,7 @@ func pushArchiveConfigs(path string, f os.FileInfo, err error) error {
 		configJson, err := ioutil.ReadFile(path)
 		check(err)
 
-		var config Config
+		var config ConfigPost
 		err = json.Unmarshal(configJson, &config)
 		check(err)
 		archiveList = append(archiveList, config)
@@ -174,6 +185,18 @@ func getContent(inputFile *string) []byte {
 	return content
 }
 
+func getGlobalConfigsJson() ConfigGlobal {
+
+	configJson, err := ioutil.ReadFile("./content/_global.json")
+	check(err)
+
+	var config ConfigGlobal
+	err = json.Unmarshal(configJson, &config)
+	check(err)
+
+	return config
+}
+
 func getPostConfigsJson(inputFile *string) (string, string, string) {
 	// Get the configs for this page:
 	// First read the post's corresponding .json file
@@ -182,11 +205,12 @@ func getPostConfigsJson(inputFile *string) (string, string, string) {
 	check(err)
 
 	// Then parse out our relevant config values for later use
-	var config Config
+	var config ConfigPost
 	err = json.Unmarshal(configJson, &config)
 	check(err)
 
-	return config.Title, config.Date, config.Permalink
+	permalink := configGlobal.BaseURL + config.Permalink
+	return config.Title, config.Date, permalink
 }
 
 // func visit(path string, f os.FileInfo, err error) error {
