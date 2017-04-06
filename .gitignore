@@ -19,3 +19,7 @@ postgen
 
 # For keeping track of things
 nextsteps.txt
+
+# Ignore some Docker things for the moment
+docker-compose.yml
+Dockerfile*
